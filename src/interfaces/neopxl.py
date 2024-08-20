@@ -86,7 +86,7 @@ class NeopixelInterface():
         head_position = int(c_time * 5) % len(pixels)
 
         # Brightness levels for each position in the tail
-        brightness_levels = [1.0, 0.6, 0.3, 0.1]  # Adjust these to get the exact fade effect you want
+        brightness_levels = [1.0, 0.5, 0.25, 0.1]  # Explicit brightness values for the tail
 
         # Iterate over all pixels
         for i in range(len(pixels)):
