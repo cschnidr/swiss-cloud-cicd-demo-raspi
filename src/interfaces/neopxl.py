@@ -76,19 +76,32 @@ class NeopixelInterface():
         for pixel in pixels:
             self.neopixel_client[pixel] = (255, 255, 255)
 
+#    def _running_lights(self, pixels):
+#        base_color = (255, 255, 255)  # white
+#        c_time = time.time()
+#        for i, pixel in enumerate(pixels):
+#            # Calculate position based on time and pixel index to create movement
+#            position = c_time * 5 - (i * 2 * math.pi / self.nb_pixels)
+#            # Use a sine wave to calculate the intensity factor
+#            intensity_factor = (math.sin(position) + 1) / 2  # this scales the sine wave to range [0, 1]
+#            # Adjust color based on intensity
+#            adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
+#            self.neopixel_client[pixel] = adjusted_color
+
     def _running_lights(self, pixels):
         base_color = (255, 255, 255)  # white
         c_time = time.time()
+        speed = 1  # Adjust speed of the running lights
         for i, pixel in enumerate(pixels):
-            # Calculate position based on time and pixel index to create movement
-            position = c_time * 5 - (i * 2 * math.pi / self.nb_pixels)
-            # Use a sine wave to calculate the intensity factor
-            intensity_factor = (math.sin(position) + 1) / 2  # this scales the sine wave to range [0, 1]
+            # Calculate the phase shift for each LED based on its index
+            phase_shift = (i / self.nb_pixels) * 2 * math.pi
+            # Position now smoothly increases over time to create continuous motion
+            position = c_time * speed + phase_shift
+            # Use a cosine wave instead of sine to ensure a smooth transition
+            intensity_factor = (math.cos(position) + 1) / 2  # Scale cosine to range [0, 1]
             # Adjust color based on intensity
             adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
             self.neopixel_client[pixel] = adjusted_color
-
-
 
     def update_pixels(self, pixels: list[int], action: Action):
         logging.debug(f"Updating pixels {pixels} with action: {action}")
