@@ -76,43 +76,28 @@ class NeopixelInterface():
         for pixel in pixels:
             self.neopixel_client[pixel] = (255, 255, 255)
 
-#    def _running_lights(self, pixels):
-#        base_color = (255, 255, 255)  # white
-#        c_time = time.time()
-#        for i, pixel in enumerate(pixels):
-#            # Calculate position based on time and pixel index to create movement
-#            position = c_time * 5 - (i * 2 * math.pi / self.nb_pixels)
-#            # Use a sine wave to calculate the intensity factor
-#            intensity_factor = (math.sin(position) + 1) / 2  # this scales the sine wave to range [0, 1]
-#            # Adjust color based on intensity
-#            adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
-#            self.neopixel_client[pixel] = adjusted_color
-
     def _running_lights(self, pixels):
         base_color = (255, 255, 255)  # white
         c_time = time.time()
-        speed = 5  # Adjust speed to control the movement speed of the light
-    
-        # Calculate the current position of the fully bright pixel
-        current_position = int(c_time * speed) % self.nb_pixels
+        tail_length = 4  # Length of the tail (including the brightest pixel)
 
-        for i, pixel in enumerate(pixels):
-            # Determine the position of this pixel relative to the current bright pixel
-            relative_position = (i - current_position) % self.nb_pixels
+        # Calculate the current "head" position on the ring
+        head_position = int(c_time * 5) % len(pixels)
+
+        # Iterate over all pixels
+        for i in range(len(pixels)):
+            # Calculate the distance of the current pixel from the head position
+            distance = (i - head_position) % len(pixels)
         
-            if relative_position == 0:
-                # The current pixel is the fully bright one
-                adjusted_color = base_color
-            elif 1 <= relative_position <= 3:
-                # The next three pixels should be less bright
-                intensity_factor = (4 - relative_position) / 4.0  # 3/4, 2/4, 1/4 brightness
+            if distance < tail_length:
+                # Determine the intensity factor based on distance
+                intensity_factor = (tail_length - distance) / tail_length
+                # Adjust color based on intensity
                 adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
+                self.neopixel_client[pixels[i]] = adjusted_color
             else:
-                # All other pixels should be off
-                adjusted_color = (0, 0, 0)
-        
-        self.neopixel_client[pixel] = adjusted_color
-
+                # Turn off the pixel if it's not in the tail
+                self.neopixel_client[pixels[i]] = (0, 0, 0)
 
 
     def update_pixels(self, pixels: list[int], action: Action):
