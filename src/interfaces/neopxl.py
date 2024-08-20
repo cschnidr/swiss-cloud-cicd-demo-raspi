@@ -80,13 +80,14 @@ class NeopixelInterface():
         base_color = (255, 255, 255)  # white
         c_time = time.time()
         for i, pixel in enumerate(pixels):
-            # Calculate position along the sine wave for smooth movement
-            position = (c_time * 4 - i) % self.nb_pixels
-            # Use a sine wave to create a smooth intensity effect
-            intensity_factor = (math.sin(position * math.pi / self.nb_pixels) + 1) / 2
+            # Calculate position based on time and pixel index to create movement
+            position = c_time * 5 - (i * 2 * math.pi / self.nb_pixels)
+            # Use a sine wave to calculate the intensity factor
+            intensity_factor = (math.sin(position) + 1) / 2  # this scales the sine wave to range [0, 1]
             # Adjust color based on intensity
             adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
             self.neopixel_client[pixel] = adjusted_color
+
 
 
     def update_pixels(self, pixels: list[int], action: Action):
