@@ -85,21 +85,23 @@ class NeopixelInterface():
         # Calculate the current "head" position on the ring
         head_position = int(c_time * 5) % len(pixels)
 
+        # Brightness levels for each position in the tail
+        brightness_levels = [1.0, 0.6, 0.3, 0.1]  # Adjust these to get the exact fade effect you want
+
         # Iterate over all pixels
         for i in range(len(pixels)):
             # Calculate the distance of the current pixel from the head position
             distance = (i - head_position) % len(pixels)
         
             if distance < tail_length:
-                # Determine the intensity factor based on distance, making the first pixel fully bright
-                intensity_factor = (tail_length - distance) / tail_length
+                # Get the corresponding brightness level from the list
+                intensity_factor = brightness_levels[distance]
                 # Adjust color based on intensity
                 adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
                 self.neopixel_client[pixels[i]] = adjusted_color
             else:
                 # Turn off the pixel if it's not in the tail
                 self.neopixel_client[pixels[i]] = (0, 0, 0)
-
 
     def update_pixels(self, pixels: list[int], action: Action):
         logging.debug(f"Updating pixels {pixels} with action: {action}")
