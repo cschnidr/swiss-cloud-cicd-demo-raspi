@@ -91,25 +91,28 @@ class NeopixelInterface():
     def _running_lights(self, pixels):
         base_color = (255, 255, 255)  # white
         c_time = time.time()
-        speed = 5  # Adjust this to control the speed of the running lights
-        tail_length = 4  # Number of LEDs in the tail
-
+        speed = 5  # Adjust speed to control the movement speed of the light
+    
         # Calculate the current position of the fully bright pixel
         current_position = int(c_time * speed) % self.nb_pixels
 
         for i, pixel in enumerate(pixels):
-            # Calculate the distance of the current LED from the bright pixel
-            distance = (i - current_position) % self.nb_pixels
-
-            if distance < tail_length:
-                # Calculate the brightness for the current LED
-                intensity_factor = 1 - (distance / tail_length)
+            # Determine the position of this pixel relative to the current bright pixel
+            relative_position = (i - current_position) % self.nb_pixels
+        
+            if relative_position == 0:
+                # The current pixel is the fully bright one
+                adjusted_color = base_color
+            elif 1 <= relative_position <= 3:
+                # The next three pixels should be less bright
+                intensity_factor = (4 - relative_position) / 4.0  # 3/4, 2/4, 1/4 brightness
                 adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
             else:
-                # Turn off the LEDs that are not in the tail
+                # All other pixels should be off
                 adjusted_color = (0, 0, 0)
-
+        
         self.neopixel_client[pixel] = adjusted_color
+
 
 
     def update_pixels(self, pixels: list[int], action: Action):
