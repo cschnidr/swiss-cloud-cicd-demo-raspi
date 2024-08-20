@@ -91,17 +91,26 @@ class NeopixelInterface():
     def _running_lights(self, pixels):
         base_color = (255, 255, 255)  # white
         c_time = time.time()
-        speed = 1  # Adjust speed of the running lights
+        speed = 5  # Adjust this to control the speed of the running lights
+        tail_length = 4  # Number of LEDs in the tail
+
+        # Calculate the current position of the fully bright pixel
+        current_position = int(c_time * speed) % self.nb_pixels
+
         for i, pixel in enumerate(pixels):
-            # Calculate the phase shift for each LED based on its index
-            phase_shift = (i / self.nb_pixels) * 2 * math.pi
-            # Position now smoothly increases over time to create continuous motion
-            position = c_time * speed + phase_shift
-            # Use a cosine wave instead of sine to ensure a smooth transition
-            intensity_factor = (math.cos(position) + 1) / 2  # Scale cosine to range [0, 1]
-            # Adjust color based on intensity
-            adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
-            self.neopixel_client[pixel] = adjusted_color
+            # Calculate the distance of the current LED from the bright pixel
+            distance = (i - current_position) % self.nb_pixels
+
+            if distance < tail_length:
+                # Calculate the brightness for the current LED
+                intensity_factor = 1 - (distance / tail_length)
+                adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
+            else:
+                # Turn off the LEDs that are not in the tail
+                adjusted_color = (0, 0, 0)
+
+        self.neopixel_client[pixel] = adjusted_color
+
 
     def update_pixels(self, pixels: list[int], action: Action):
         logging.debug(f"Updating pixels {pixels} with action: {action}")
