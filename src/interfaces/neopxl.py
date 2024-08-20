@@ -105,8 +105,8 @@ class NeopixelInterface():
                 # Turn off the pixel if it's not in the tail
                 self.neopixel_client[pixels[i]] = (0, 0, 0)
 
-    # Show the changes after updating all pixels
-    self.neopixel_client.show()
+        # Show the changes after updating all pixels
+        self.neopixel_client.show()
 
     def update_pixels(self, pixels: list[int], action: Action):
         logging.debug(f"Updating pixels {pixels} with action: {action}")
