@@ -59,7 +59,7 @@ class NeopixelInterface():
 
     def _off(self, pixels):
         for pixel in pixels:
-            self.neopixel_client[pixel] = (50, 0, 0)
+            self.neopixel_client[pixel] = (10, 0, 0)
 
     def _red(self, pixels):
         for pixel in pixels:
