@@ -83,7 +83,7 @@ class NeopixelInterface():
         tail_length = 4  # Length of the tail (including the brightest pixel)
 
         # Calculate the current "head" position on the ring
-        head_position = int(c_time * 5) % len(pixels)
+        head_position = int(c_time * 7) % len(pixels)
 
         # Brightness levels for each position in the tail
         brightness_levels = [1.0, 0.5, 0.25, 0.1]  # Explicit brightness values for the tail
