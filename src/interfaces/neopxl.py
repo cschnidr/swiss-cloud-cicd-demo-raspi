@@ -90,7 +90,7 @@ class NeopixelInterface():
             distance = (i - head_position) % len(pixels)
         
             if distance < tail_length:
-                # Determine the intensity factor based on distance
+                # Determine the intensity factor based on distance, making the first pixel fully bright
                 intensity_factor = (tail_length - distance) / tail_length
                 # Adjust color based on intensity
                 adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
