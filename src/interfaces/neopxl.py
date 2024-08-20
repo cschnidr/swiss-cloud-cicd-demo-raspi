@@ -78,15 +78,19 @@ class NeopixelInterface():
             self.neopixel_client[pixel] = (255, 255, 255)
 
     def _running_lights(self, pixels):
-        base_color = (255, 255, 255)  # white
+        # Explicit brightness levels for white color
+        brightness_levels = [
+            (255, 255, 255),  # Full brightness
+            (128, 128, 128),  # 50% brightness
+            (64, 64, 64),     # 25% brightness
+            (25, 25, 25)      # 10% brightness
+        ]
+    
         c_time = time.time()
-        tail_length = 4  # Length of the tail (including the brightest pixel)
+        tail_length = len(brightness_levels)  # Length of the tail (4 pixels)
 
         # Calculate the current "head" position on the ring
-        head_position = int(c_time * 7) % len(pixels)
-
-        # Brightness levels for each position in the tail
-        brightness_levels = [1.0, 0.5, 0.25, 0.1]  # Explicit brightness values for the tail
+        head_position = int(c_time * 10) % len(pixels)  # Speed up by increasing the multiplier
 
         # Iterate over all pixels
         for i in range(len(pixels)):
@@ -94,14 +98,15 @@ class NeopixelInterface():
             distance = (i - head_position) % len(pixels)
         
             if distance < tail_length:
-                # Get the corresponding brightness level from the list
-                intensity_factor = brightness_levels[distance]
-                # Adjust color based on intensity
-                adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
+                # Use the pre-defined brightness levels
+                adjusted_color = brightness_levels[distance]
                 self.neopixel_client[pixels[i]] = adjusted_color
             else:
                 # Turn off the pixel if it's not in the tail
                 self.neopixel_client[pixels[i]] = (0, 0, 0)
+
+    # Show the changes after updating all pixels
+    self.neopixel_client.show()
 
     def update_pixels(self, pixels: list[int], action: Action):
         logging.debug(f"Updating pixels {pixels} with action: {action}")
