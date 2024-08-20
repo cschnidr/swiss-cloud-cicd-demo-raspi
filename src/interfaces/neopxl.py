@@ -1,6 +1,7 @@
 import time
 import sys
 import logging
+import math
 
 if sys.argv and len(sys.argv) > 1 and sys.argv[1] == "--mock":
     import src.mock.neopixel as neopixel  # use for non-Raspi testing
