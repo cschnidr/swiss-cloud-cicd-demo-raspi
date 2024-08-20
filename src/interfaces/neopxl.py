@@ -77,15 +77,16 @@ class NeopixelInterface():
             self.neopixel_client[pixel] = (255, 255, 255)
 
     def _running_lights(self, pixels):
-        base_color = (255, 255, 255) #white
-        c_time = time.time()
-        for i, pixel in enumerate(pixels):
-            # Create a moving effect using the intensity wheel and time
-            # Add idx to make it "move" in the other direction
-            index = int((c_time * 2 + i) % self.nb_pixels)
-            intensity_factor = self.int_values[index % self.len_int_values] / 255.0
-            adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
-            self.neopixel_client[pixel] = adjusted_color
+    base_color = (255, 255, 255)  # white
+    c_time = time.time()
+    for i, pixel in enumerate(pixels):
+        # Calculate position along the sine wave for smooth movement
+        position = (c_time * 4 - i) % self.nb_pixels
+        # Use a sine wave to create a smooth intensity effect
+        intensity_factor = (math.sin(position * math.pi / self.nb_pixels) + 1) / 2
+        # Adjust color based on intensity
+        adjusted_color = tuple(int(value * intensity_factor) for value in base_color)
+        self.neopixel_client[pixel] = adjusted_color
 
 
     def update_pixels(self, pixels: list[int], action: Action):
